@@ -3,10 +3,10 @@
     flake-utils.url = "github:numtide/flake-utils";
     naersk.url = "github:nix-community/naersk";
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    ravedude.url = "github:Rahix/avr-hal?dir=ravedude";
+    # ravedude.url = "github:Rahix/avr-hal?dir=ravedude";
   };
 
-  outputs = { self, flake-utils, naersk, nixpkgs, ravedude }:
+  outputs = { self, flake-utils, naersk, nixpkgs }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = (import nixpkgs) {
@@ -23,8 +23,7 @@
 
         # For `nix develop`:
         devShell = pkgs.mkShell {
-          nativeBuildInputs = with pkgs; [ rustc cargo rust-analyzer avr-gcc avrdude ];
-          buildInputs = [ ravedude ];
+          nativeBuildInputs = with pkgs; [ rustup rustc cargo rust-analyzer pkgsCross.avr.buildPackages.gcc avrdude udev ];
           shellHook = ''
             export RAVEDUDE_PORT=/dev/tty.usbserial-0001
           '';
