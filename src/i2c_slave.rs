@@ -9,12 +9,12 @@ use arduino_hal::{
     },
 };
 use avr_device::atmega328p::TWI;
-use ufmt::{derive::uDebug, uDebug, uwrite};
+use ufmt::{uDebug, uwrite};
 
 // #[derive(uDebug, Clone)]
 pub enum I2CSlaveError {
     BufferOverflow,
-    UnknownState((u8, u8)), // (Hex state, internal state)
+    UnknownState(u8), // Hex state
     NotImplemented,
     NotExpectedTransactionDirection,
 }
@@ -26,12 +26,9 @@ impl uDebug for I2CSlaveError {
     {
         match self {
             I2CSlaveError::BufferOverflow => uwrite!(f, "BufferOverflow"),
-            I2CSlaveError::UnknownState((state, internal_state)) => uwrite!(
-                f,
-                "UnknownState: 0x{:X}, internal state {}",
-                *state,
-                *internal_state
-            ),
+            I2CSlaveError::UnknownState(state) => {
+                uwrite!(f, "UnknownState: 0x{:X}", *state,)
+            }
             I2CSlaveError::NotImplemented => uwrite!(f, "NotImplemented"),
             I2CSlaveError::NotExpectedTransactionDirection => {
                 uwrite!(f, "NotExpectedTransactionDirection")
@@ -116,9 +113,6 @@ impl<'a> I2cSlave<'a> {
         let mut i: usize = 0;
         let buffer_len: usize = buffer.len();
         let mut status: u8;
-
-        // TODO this thing can be removed as everythins working
-        let mut internal_state: u8 = 1;
 
         self.arm();
 
@@ -255,13 +249,13 @@ impl<'a> I2cSlave<'a> {
                         self.int_flag.store(false, Ordering::SeqCst);
 
                         // ERROR
-                        break Err(I2CSlaveError::UnknownState((status, internal_state)));
+                        break Err(I2CSlaveError::UnknownState(status));
                     }
                     _ => {
                         // Resetting flag
                         self.int_flag.store(false, Ordering::SeqCst);
 
-                        break Err(I2CSlaveError::UnknownState((status, internal_state)));
+                        break Err(I2CSlaveError::UnknownState(status));
                     }
                 }
             }
@@ -418,13 +412,13 @@ impl<'a> I2cSlave<'a> {
                         self.int_flag.store(false, Ordering::SeqCst);
 
                         // ERROR
-                        break Err(I2CSlaveError::UnknownState((status, internal_state)));
+                        break Err(I2CSlaveError::UnknownState(status));
                     }
                     _ => {
                         // Resetting flag
                         self.int_flag.store(false, Ordering::SeqCst);
 
-                        break Err(I2CSlaveError::UnknownState((status, internal_state)));
+                        break Err(I2CSlaveError::UnknownState(status));
                     }
                 }
             }
