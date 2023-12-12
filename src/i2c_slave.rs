@@ -9,14 +9,35 @@ use arduino_hal::{
     },
 };
 use avr_device::atmega328p::TWI;
-use ufmt::derive::uDebug;
+use ufmt::{derive::uDebug, uDebug, uwrite};
 
-#[derive(uDebug, Clone)]
+// #[derive(uDebug, Clone)]
 pub enum I2CSlaveError {
     BufferOverflow,
-    UnknownState((u8, u8)),
+    UnknownState((u8, u8)), // (Hex state, internal state)
     NotImplemented,
     NotExpectedTransactionDirection,
+}
+
+impl uDebug for I2CSlaveError {
+    fn fmt<W>(&self, f: &mut ufmt::Formatter<'_, W>) -> Result<(), W::Error>
+    where
+        W: arduino_hal::prelude::_ufmt_uWrite + ?Sized,
+    {
+        match self {
+            I2CSlaveError::BufferOverflow => uwrite!(f, "BufferOverflow"),
+            I2CSlaveError::UnknownState((state, internal_state)) => uwrite!(
+                f,
+                "UnknownState: 0x{:X}, internal state {}",
+                *state,
+                *internal_state
+            ),
+            I2CSlaveError::NotImplemented => uwrite!(f, "NotImplemented"),
+            I2CSlaveError::NotExpectedTransactionDirection => {
+                uwrite!(f, "NotExpectedTransactionDirection")
+            }
+        }
+    }
 }
 
 #[allow(dead_code)]
@@ -50,7 +71,7 @@ impl<'a> I2cSlave<'a> {
         // Set slave address
         self.twi.twar.write(|w| w.twa().bits(self.addr));
 
-        // Enable GCE call
+        // Enable GCA call
         if gca {
             self.twi.twar.write(|w| w.twgce().set_bit());
         }
@@ -113,6 +134,7 @@ impl<'a> I2cSlave<'a> {
                 status = self.twi.twsr.read().bits();
 
                 match status {
+                    // Own SLA+W has been received; ACK has been returned, but we in read mode
                     0x60 => {
                         self.twi.twdr.write(|w| w.bits(0));
 
