@@ -33,6 +33,7 @@
       "original": {
         "owner": "nix-community",
         "repo": "naersk",
+        "rev": "aeb58d5e8faead8980a807c840232697982d47b9",
         "type": "github"
       }
     },

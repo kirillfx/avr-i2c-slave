@@ -1,7 +1,7 @@
 {
   inputs = {
     flake-utils.url = "github:numtide/flake-utils";
-    naersk.url = "github:nix-community/naersk";
+    naersk.url = "github:nix-community/naersk/aeb58d5e8faead8980a807c840232697982d47b9";
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     ravedude-flake.url = "github:Rahix/avr-hal?dir=ravedude";
   };
