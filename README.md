@@ -1,7 +1,7 @@
 i2c-slave
 =========
 
-Rust project for the _SparkFun ProMini 5v_.
+Rust project for the _SparkFun ProMini 5v_ that implements i2c slave. Master complementary repo is [here](https://github.com/kirillfx/avr-i2c-master-test).
 
 I'm flashing it via USB programmer and serial interface for it works for me with 4800 baud in
 serial monitor and 9600 on arduino board.
@@ -9,15 +9,18 @@ serial monitor and 9600 on arduino board.
 `RAVEDUDE_PORT` is configure with direnv `.envrc` file 
 
 ## Build Instructions
-1. Install prerequisites as described in the [`avr-hal` README] (`avr-gcc`, `avr-libc`, `avrdude`, [`ravedude`]).
 
-2. Run `cargo build` to build the firmware.
+- Specify `RAVEDUDE_PORT` in `.envrc` if `direnv` is used. If you on linux with nix, change env var in `flake.nix`.
 
-3. Run `cargo run` to flash the firmware to a connected board.  If `ravedude`
+- Install prerequisites as described in the [`avr-hal` README] (`avr-gcc`, `avr-libc`, `avrdude`, [`ravedude`]).
+
+- Run `cargo build` to build the firmware.
+
+- Run `cargo run` to flash the firmware to a connected board.  If `ravedude`
    fails to detect your board, check its documentation at
    <https://crates.io/crates/ravedude>.
 
-4. `ravedude` will open a console session after flashing where you can interact
+- `ravedude` will open a console session after flashing where you can interact
    with the UART console of your board.
 
 [`avr-hal` README]: https://github.com/Rahix/avr-hal#readme
